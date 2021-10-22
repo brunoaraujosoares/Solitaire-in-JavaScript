@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<title>Paciência</title>
+<link rel="stylesheet" type="text/css" href="css/css.css">
+<noscript><h1>Habilite o javascript</h1></noscript>
+<script src="js/scripts.js"></script>
+</head>
+
+<body onselectstart="return false">
+
+<h1>Paciência</h1>
+<nav>
+<ul>
+  <li><a href="javascript:;" onclick="exibeCartas()">Novo Jogo</a></li>
+</ul>
+<ul>
+  <li><a href="javascript:;" onclick="destroiBaralho()">Destrói Baralho</a></li>
+</ul>
+
+</nav>
+
+
+<div id="mesa" style='border:1px solid #000000'> 
+
+  <div id="dispositorio"><div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div></div>
+  <div id="repositorio"></div>
+  <div id="depositos">
+	<div id="deposito1" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="deposito2" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="deposito3" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="deposito4" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+  </div>
+	
+  <div id="colunas">
+	<div id="coluna1" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna2" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna3" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna4" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna5" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna6" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+	<div id="coluna7" ondrop="drop(event,this)" ondragover="allowDrop(event)"></div>
+  </div>
+</div>
+<footer>
+<div id="mensagem"></div>
+Autor: Bruno Araújo - brunoaraujosoares@gmail.com <br />
+Feito por uma pessoa sem paciência!
+</body>
+</html>
