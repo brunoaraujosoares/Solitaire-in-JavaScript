@@ -105,17 +105,26 @@ footer {
 
 .virada {    background: #36c;
   background:
-  linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+  /* linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
   linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
   linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
   linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-  #36c;
+  #36c; */
   background-size: 15px 30px;
-	/*background-image: radial-gradient(circle ,  #337540 0%, #003832 100%) !important; */} 
-.virada:hover {background-image:radial-gradient(circle ,  #558950 0%, #003832 100%) !important;  box-shadow: 2px 2px 5px #FFF; border-color: #FFF;}
+  background-image: radial-gradient(circle ,  #337540 0%, #003832 100%) !important;}
+.virada:hover { box-shadow: 2px 2px 5px #FFF; border-color: #FFF;}
 .virada *{ visibility:hidden; display:none;}
 	
-.carta { box-shadow: 2px 2px 5px #000; width: 120px; height:180px; border: 1px solid #000; background-image: radial-gradient(circle ,  #FFFFFF 0%, #CCCCCC 100%);   border-radius: 5px; padding: 5px; position: absolute; }
+.carta { 
+	box-shadow: 2px 2px 5px #000; 
+	width: 120px; 
+	height:180px; 
+	border: 1px solid #000; 
+	background-image: radial-gradient(circle ,  #FFFFFF 0%, #CCCCCC 100%);   
+	border-radius: 5px; 
+	padding: 5px; 
+	position: absolute; 
+}
 
 .carta:hover { background: #FFF; }
 
@@ -129,4 +138,63 @@ footer {
 
 .desenho {  border-radius: 5px;  text-align: center; border: 1px solid #000; width: 95px; height: 168px; position: relative; display:table-cell; vertical-align: middle; font-size: 32px; padding: 10px 18px 0px 18px }
 
+#nav { 
+	margin: 0 auto;
+	padding: 0px ;
+	float:  none;
+	clear:  both;
+	display: table;
+	height: 120px;
+	text-align: right;
+	}
 
+.bt_menu {
+  float: left;
+  margin: 20px;
+  align-items: center;
+  background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  display: flex;
+  font-family: Phantomsans, sans-serif;
+  font-size: 20px;
+  justify-content: center;
+  line-height: 1em;
+  max-width: 100%;
+  min-width: 140px;
+  padding: 3px;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bt_menu:active,
+.bt_menu:hover {
+  outline: 0;
+}
+
+.bt_menu span {
+  background-color: rgb(5, 6, 45);
+  padding: 16px 24px;
+  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  transition: 300ms;
+}
+
+.bt_menu:hover span {
+  background: none;
+}
+
+@media (min-width: 768px) {
+  .bt_menu {
+    font-size: 24px;
+    min-width: 196px;
+  }
+}

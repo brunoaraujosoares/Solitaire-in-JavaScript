@@ -3,16 +3,13 @@
  * @author: Bruno Araujo - brunoaraujosoares@gmail.com
  * Criado em: 13/02/2020
  */
-
  
- // BUG na função de comparar quando reinicia o cava 
- // BUG quando solta uma carta do repositório no repositório
- // BUG zindex quando manda quando solta uma carta do deposito dos naipes
- 
- // criar função com desfazer de até 3 níveis
- 
- //  carregar as cartas abaixo da atual nas colunas
- 
+// bug when drag one or more than three cards line 246 
+// carregar as cartas abaixo da atual nas colunas
+// criar função com desfazer de até 3 níveis
+// colocar pontuação
+// colocar tempo
+  
  
 function constroiBaralho(){ // cria as cartas
 	var naipes = ['&spades;','&hearts;','&clubs;','&diams;'];
@@ -127,35 +124,36 @@ function exibeCartas(){
 		} else {
 
 		// define as posições das cartas nas colunas
+		    distance = 25
 		
 			if (i < 7) { // posiciona as cartas da sétima coluna
 				
-				carta.style.marginTop = i * 10 + 'px'
+				carta.style.marginTop = i * distance + 'px'
 				coluna7.appendChild(carta); 
 			}
 			if (i > 6 && i < 13) { // posiciona as cartas da sexta fileira
-				carta.style.marginTop = (i - 7) * 10 + 'px'
+				carta.style.marginTop = (i - 7) * distance + 'px'
 				coluna6.appendChild(carta); 
 			}
 			if (i > 12 && i < 18) { // posiciona as cartas da quinta fileira
-				carta.style.marginTop = (i - 13) * 10 + 'px'
+				carta.style.marginTop = (i - 13) * distance + 'px'
 				coluna5.appendChild(carta); 
 			}
 			if (i > 17 && i < 22) { // posiciona as cartas da quarta fileira
-				carta.style.marginTop = (i - 18) * 10 + 'px'
+				carta.style.marginTop = (i - 18) * distance + 'px'
 				coluna4.appendChild(carta); 
 			}
 			if (i > 21 && i < 25) { // posiciona as cartas da terceira fileira
-				carta.style.marginTop = (i - 22) * 10 + 'px'
+				carta.style.marginTop = (i - 22) * distance + 'px'
 				coluna3.appendChild(carta); 
 			}
 			if (i > 24 && i < 27) { // posiciona as cartas da segunda fileira
-				carta.style.marginTop = (i - 25) * 10 + 'px'
+				carta.style.marginTop = (i - 25) * distance + 'px'
 				coluna2.appendChild(carta); 
 			}
 
 			if (i > 26 && i < 28) { // posiciona as cartas da primeira fileira
-				carta.style.marginTop = (i - 27) * 10 + 'px'
+				carta.style.marginTop = (i - 27) * distance + 'px'
 				coluna1.appendChild(carta); 
 			}			
 		}
@@ -180,10 +178,14 @@ function exibeCartas(){
 				this.style.zIndex = quantas_tem
 				repositorio.appendChild(this)
 			}
-		
+			
+			
 		}
 		
-		carta.ondragstart=  function (){ drag(event) }
+		carta.ondragstart=  function (){ 
+			drag(event) 
+			
+		}
 	}
 
 	var cols = document.querySelectorAll('.carta');
@@ -197,11 +199,6 @@ function reiniciaCava(){
 
 	var disp = document.getElementById("dispositorio")
 	var rep  = document.getElementById("repositorio")
-	
-/*
-  <div id="dispositorio"><div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div></div>
-  <div id="repositorio"></div>
- */	
  
 	disp.innerHTML = rep.innerHTML
 	rep.innerHTML = "";
@@ -225,96 +222,92 @@ function reiniciaCava(){
 			}
 		}
 		disp.childNodes[z].ondragstart=  function (){ drag(event) }
-	}	
+	}
+
+	// <div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div> 
+	carta_vazia = document.createElement('div');
+	carta_vazia.innerHTML = '0'
+	carta_vazia.className  = "lightgreen"
+	carta_vazia.id = 'carta_vazia';
+	carta_vazia.onclick = function() { reiniciaCava();}
+	disp.appendChild(carta_vazia)
+	
 }
 
-function handleDragStart(e) {
-  
+function handleDragStart(e) {   
   //this.style.opacity = '0.4';  // this / e.target is the source node.
-  
 }
-
-/*
-var cols = document.querySelectorAll('.carta');
-[].forEach.call(cols, function(col) {
-  col.addEventListener('dragstart', handleDragStart, false);
-});
-*/
 
 function allowDrop(ev) {
   ev.preventDefault();
 }
 
-function drag(ev) {
+function drag(ev) { // bug when drag one or more than three cards
   ev.dataTransfer.setData("Text", ev.target.id);
-  var conteudo = document.getElementById(ev.target.id).parentElement
-  var filhas = []
 
-   // Transporta as cartas para a coluna  
-  if(conteudo.id.indexOf("coluna") != -1)   {
-	// testa se existem divs com zIndex maior que a carta selecionada
-    for ( cartas = 0; cartas < conteudo.childNodes.length; cartas++){
-	    if(conteudo.childNodes[cartas].style.zIndex > ev.target.style.zIndex ){
-          filhas .push(conteudo.childNodes[cartas])        
-		}
-	}
-    if (filhas.length > 0 ){
-		// cria uma div para carregar as cartas que estão abaixo da arrastada
-		var novadiv = document.createElement('div')
-		novadiv.style.marginTop="10px"
-		novadiv.style.border="1px solid #000000"
-		novadiv.style.position="absolute"
-		novadiv.style.position="absolute"
-		novadiv.style.zIndex = conteudo.style.zIndex + 1 + "px"			
-		ev.target.appendChild(novadiv)
-		//alert(filhas.length + " \n" + ev.target.innerHTML)
+  
+	// check to see if the card is in a Tableau column 
+	column = document.getElementById(ev.target.id).parentElement
+	
+	if (column.id.indexOf('coluna') != -1){	
+		card = document.getElementById(ev.target.id)
 		
+		// test only face down cards
+		if (column.childElementCount > 0){
+			temp_div = document.createElement('div')
+			temp_div.id = 'temp_div'
+			temp_div.style.margin = '0px'
+			temp_div.style.padding = '0px'
+			temp_div.style.position = 'absolute'
+			temp_div.style.top = '0px'
+			temp_div.style.left = '0px'
+			card.appendChild(temp_div)
+		    console.log( temp_div.innerHTML )	
+			for (cards = 0; cards <= column.childElementCount ; cards++) {
+				console.log(cards)
+				if(column.childNodes[cards].className.indexOf('virada') == -1 && column.childNodes[cards].id != 'temp_div' && column.childNodes[cards].id!= card.id ){
+					console.log(cards)
+					temp_div.appendChild(column.childNodes[cards])					
+				}
+			}		
+		}		
 	}
-  } 
 }
 
-function valorCarta(carta){ // bug quando reinicia o cava
-  //alert(carta.innerHTML)
-  if(carta.childNodes[1].innerHTML == "A"){
-	  valorcarta = 1;
-  } else if(carta.childNodes[1].innerHTML == "J") {
-	  valorcarta = 11;
-  } else if(carta.childNodes[1].innerHTML == "Q") {
-	  valorcarta = 12;
-  } else if(carta.childNodes[1].innerHTML == "K") {
-	  valorcarta = 13;
-  } else {
-	  valorcarta = parseInt(carta.childNodes[0].childNodes[0].innerHTML);
-  }
+function valorCarta(carta){ // card value 
+	if(carta.childNodes[1].innerHTML == "A"){ valorcarta = 1; }
+	else if(carta.childNodes[1].innerHTML == "J") { valorcarta = 11; }
+	else if(carta.childNodes[1].innerHTML == "Q") { valorcarta = 12; }
+	else if(carta.childNodes[1].innerHTML == "K") { valorcarta = 13; }
+	else { valorcarta = parseInt(carta.childNodes[0].childNodes[0].innerHTML); }
   return valorcarta;
 }
 
 function drop(ev,repositorio) {
-  var erro = '';
-  var data = ev.dataTransfer.getData("Text");
-  var carta = document.getElementById(data)
+	var erro = '';
+	var data = ev.dataTransfer.getData("Text");
+	var carta = document.getElementById(data)
+	var valorcarta = valorCarta(carta);
+	marginTopAntes = carta.style.marginTop
+	carta.style.marginTop = "0px"
   
-  var valorcarta = valorCarta(carta);
-  marginTopAntes = carta.style.marginTop
-  carta.style.marginTop = "0px"
+	var movimento = true // verifica se o movimento é possível para exibir a mensagem.
   
-  var movimento = true // verifica se o movimento é possível para exibir a mensagem.
-  
-  if(repositorio.id.indexOf('deposito') != -1){ // coloca cartas nos depositos dos naipes 
-	if(repositorio.childNodes.length == 0) { // o repositorio tem que  ser preenchido primeir com uma carta ás de qualquer naipe  
-	  if(valorcarta != 1) { // pega o conteudo do h3 e testa se é uma carta ÁS
-		movimento = false;
-	  }
-	} else { 
-	  if(repositorio.childNodes[0].childNodes[0].childNodes[1].innerHTML != carta.childNodes[0].childNodes[1].innerHTML){
-		movimento = false;	
-	  }
-	  valorCartaAnterior = valorCarta(repositorio.lastChild)
-	  if(valorcarta != (valorCartaAnterior + 1)){
-		movimento = false;	
-	  }
+	if(repositorio.id.indexOf('deposito') != -1){ // coloca cartas nos depositos dos naipes 
+		if(repositorio.childNodes.length == 0) { // o repositorio tem que  ser preenchido primeir com uma carta ás de qualquer naipe  
+			if(valorcarta != 1) { // pega o conteudo do h3 e testa se é uma carta ÁS
+				movimento = false;
+			}
+		} else { 
+			if(repositorio.childNodes[0].childNodes[0].childNodes[1].innerHTML != carta.childNodes[0].childNodes[1].innerHTML){
+				movimento = false;	
+		}
+			valorCartaAnterior = valorCarta(repositorio.lastChild)
+			if(valorcarta != (valorCartaAnterior + 1)){
+				movimento = false;	
+			}
+		}
 	}
-  }
   
   if(repositorio.id.indexOf('coluna') != -1){ // coloca as cartas na coluna
     //alert(repositorio.childNodes.length)
@@ -343,18 +336,33 @@ function drop(ev,repositorio) {
 		carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
 	    // muda o zIndex para o anterior + 1
         // muda a o margin-top para o anterior mais 10
-	  }
+
+		}
 	}
 	
   }
 
-  if(movimento == false) {
-	  alert('Movimento não permitido! \n' + erro);
-      carta.style.marginTop = marginTopAntes
-	  return;
-  }
+
+
   
-  carta.style.position = 'absolute'
-  repositorio.appendChild(carta);
-  ev.preventDefault();
+	if(movimento == false) {
+		alert('Movimento não permitido! \n' + erro);
+		carta.style.marginTop = marginTopAntes
+		return;
+	}
+  
+	carta.style.position = 'absolute'
+	repositorio.appendChild(carta);
+	ev.preventDefault();
+	
+	/* Remove temp div after moving the cards */
+	temp_div = document.getElementById("temp_div");
+	if (temp_div){  
+		for (card = 0 ; card < temp_div.childElementCount; card++) {
+			temp_div.childNodes[card].style.marginTop = parseInt(repositorio.lastChild.style.marginTop.substr(0,repositorio.lastChild.style.marginTop.indexOf('p'))) + 30 + 'px';
+			temp_div.childNodes[card].style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
+			repositorio.appendChild(temp_div.childNodes[card])
+		}
+		document.getElementById(temp_div.parentElement.id).removeChild(temp_div)  
+	}
 }
