@@ -4,36 +4,24 @@
  * Criado em: 13/02/2020
  */
  
-// bug when drag one or more than three cards line 246
+// bug when drag more than one card line 246
+// add turn bottom card in the Tableu
 // carregar as cartas abaixo da atual nas colunas
-// criar função com desfazer de até 3 níveis
-// colocar pontuação
-// colocar tempo
- 
-function build_deck(){ // create one deck of cards
-	var suit   = ['&spades;','&hearts;','&clubs;','&diams;'];
-	var	faces  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-	var cartas = [];
+// 3 levels of undo
+// add ponints
+// add time
 
-	for(i = 0; i < suit.length ; i++){
-		for(z = 0; z < faces.length ; z++){ cartas.push(suit[i]+","+faces[z]); }
-	}
-	return cartas;
-} // end build_deck
 
-function shuffle_deck(array) { // embaralha as cartas
-	var m = array.length, t, i;
-	// While there remain elements to shuffle…
-	while (m) {
-		// Pick a remaining element…
-		i = Math.floor(Math.random() * m--);
-		// And swap it with the current element.
-		t = array[m];
-		array[m] = array[i];
-		array[i] = t;
-	}
-	return array;
-} // FIM DE embaralha
+
+/* undo */
+var position_before = [] // saves the previous positions of cards
+var status_before   = [] // saves if the card is face down or up
+var zindex_before   = [] // saves the previoues zindex valuie
+
+function undo(card){
+	
+}
+
 
 function destroy_deck(){
 	list = [
@@ -177,9 +165,8 @@ function exibeCartas(){
 			
 		}
 		
-		carta.ondragstart=  function (){ 
-			drag(event) 
-		}
+		carta.ondragstart = function (){ drag(event) }
+	
 	}
 
 	var cols = document.querySelectorAll('.carta');
