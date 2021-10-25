@@ -4,7 +4,7 @@
  * Criado em: 13/02/2020
  */
  
-// bug when drag one or more than three cards line 246 
+// bug when drag one or more than three cards line 246
 // carregar as cartas abaixo da atual nas colunas
 // criar função com desfazer de até 3 níveis
 // colocar pontuação
@@ -184,7 +184,6 @@ function exibeCartas(){
 		
 		carta.ondragstart=  function (){ 
 			drag(event) 
-			
 		}
 	}
 
@@ -243,11 +242,42 @@ function allowDrop(ev) {
 }
 
 function drag(ev) { // bug when drag one or more than three cards
-  ev.dataTransfer.setData("Text", ev.target.id);
+	ev.dataTransfer.setData("Text", ev.target.id);
 
-  
-	// check to see if the card is in a Tableau column 
 	column = document.getElementById(ev.target.id).parentElement
+	// check to see if the card is in a Tableau column 
+	if (column.id.indexOf('coluna') != -1){	
+		
+
+		// get actual card
+		card = document.getElementById(ev.target.id)
+		// get cards with zIndex greater than the actual card
+		temp_div = document.createElement('div')
+		temp_div.id = 'temp_div'
+		temp_div.style.margin = '0px'
+		temp_div.style.padding = '0px'
+		temp_div.style.position = 'absolute'
+		temp_div.style.top = '0px'
+		temp_div.style.left = '0px'
+		
+		card_list = []
+		for (cards = 0; cards < column.childNodes.length ; cards++) {
+			console.log(column.childNodes[cards])
+			if(column.childNodes[cards] != 'undefined'){
+				if(parseInt(card.style.zIndex) <  + parseInt(column.childNodes[cards].style.zIndex)){
+					temp_div.appendChild(column.childNodes[cards])
+					
+				}
+			}
+		}
+		console.log(card_list.length)
+		if(card_list.length > 0){ 
+			card.appendChild(temp_div)
+		}
+	
+	}
+
+	/*
 	
 	if (column.id.indexOf('coluna') != -1){	
 		card = document.getElementById(ev.target.id)
@@ -263,8 +293,8 @@ function drag(ev) { // bug when drag one or more than three cards
 			temp_div.style.left = '0px'
 			card.appendChild(temp_div)
 		    console.log( temp_div.innerHTML )	
-			for (cards = 0; cards <= column.childElementCount ; cards++) {
-				console.log(cards)
+			for (cards = 0; cards < column.childNodes.length ; cards++) {
+				console.log(column.childNodes[cards])
 				if(column.childNodes[cards].className.indexOf('virada') == -1 && column.childNodes[cards].id != 'temp_div' && column.childNodes[cards].id!= card.id ){
 					console.log(cards)
 					temp_div.appendChild(column.childNodes[cards])					
@@ -272,6 +302,7 @@ function drag(ev) { // bug when drag one or more than three cards
 			}		
 		}		
 	}
+	*/
 }
 
 function valorCarta(carta){ // card value 
@@ -341,9 +372,6 @@ function drop(ev,repositorio) {
 	}
 	
   }
-
-
-
   
 	if(movimento == false) {
 		alert('Movimento não permitido! \n' + erro);
