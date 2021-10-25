@@ -9,22 +9,19 @@
 // criar função com desfazer de até 3 níveis
 // colocar pontuação
 // colocar tempo
-  
  
-function constroiBaralho(){ // cria as cartas
-	var naipes = ['&spades;','&hearts;','&clubs;','&diams;'];
+function build_deck(){ // create one deck of cards
+	var suit   = ['&spades;','&hearts;','&clubs;','&diams;'];
 	var	faces  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 	var cartas = [];
 
-	for(i = 0; i < naipes.length ; i++){
-		for(z = 0; z < faces.length ; z++){
-			cartas.push(naipes[i]+","+faces[z])
-		}
+	for(i = 0; i < suit.length ; i++){
+		for(z = 0; z < faces.length ; z++){ cartas.push(suit[i]+","+faces[z]); }
 	}
 	return cartas;
-} // FIM constroiBaralho
+} // end build_deck
 
-function embaralha(array) { // embaralha as cartas
+function shuffle_deck(array) { // embaralha as cartas
 	var m = array.length, t, i;
 	// While there remain elements to shuffle…
 	while (m) {
@@ -38,8 +35,8 @@ function embaralha(array) { // embaralha as cartas
 	return array;
 } // FIM DE embaralha
 
-function destroiBaralho(){
-	lista = [
+function destroy_deck(){
+	list = [
 			'coluna1',
 			'coluna2',
 			'coluna3',
@@ -54,20 +51,18 @@ function destroiBaralho(){
 			'deposito3',
 			'deposito4'
 		];
-	for( i = 0; i < lista.length ; i++){
-		if (lista[i] != 'dispositorio'){
-			document.getElementById(lista[i]).innerHTML = ''
+	for( i = 0; i < list.length ; i++){
+		if (list[i] != 'dispositorio'){
+			document.getElementById(list[i]).innerHTML = ''
 		} else {
-			document.getElementById(lista[i]).innerHTML = '<div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div>'
+			document.getElementById(list[i]).innerHTML = '<div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div>'
 		}
-	}
-			
+	}	
 }
 
-
 function exibeCartas(){
-	destroiBaralho()
-	var cartas = embaralha(constroiBaralho());
+	destroy_deck()
+	var cartas = shuffle_deck(build_deck());
 	var mesa = document.getElementById("mesa");
 	var coluna1 = document.getElementById("coluna1");
 	var coluna2 = document.getElementById("coluna2");
@@ -248,7 +243,6 @@ function drag(ev) { // bug when drag one or more than three cards
 	// check to see if the card is in a Tableau column 
 	if (column.id.indexOf('coluna') != -1){	
 		
-
 		// get actual card
 		card = document.getElementById(ev.target.id)
 		// get cards with zIndex greater than the actual card
@@ -262,7 +256,7 @@ function drag(ev) { // bug when drag one or more than three cards
 		
 		card_list = []
 		for (cards = 0; cards < column.childNodes.length ; cards++) {
-			console.log(column.childNodes[cards])
+			// console.log(column.childNodes[cards])
 			if(column.childNodes[cards] != 'undefined'){
 				if(parseInt(card.style.zIndex) <  + parseInt(column.childNodes[cards].style.zIndex)){
 					temp_div.appendChild(column.childNodes[cards])
@@ -270,39 +264,11 @@ function drag(ev) { // bug when drag one or more than three cards
 				}
 			}
 		}
-		console.log(card_list.length)
+		// console.log(card_list.length)
 		if(card_list.length > 0){ 
 			card.appendChild(temp_div)
 		}
-	
 	}
-
-	/*
-	
-	if (column.id.indexOf('coluna') != -1){	
-		card = document.getElementById(ev.target.id)
-		
-		// test only face down cards
-		if (column.childElementCount > 0){
-			temp_div = document.createElement('div')
-			temp_div.id = 'temp_div'
-			temp_div.style.margin = '0px'
-			temp_div.style.padding = '0px'
-			temp_div.style.position = 'absolute'
-			temp_div.style.top = '0px'
-			temp_div.style.left = '0px'
-			card.appendChild(temp_div)
-		    console.log( temp_div.innerHTML )	
-			for (cards = 0; cards < column.childNodes.length ; cards++) {
-				console.log(column.childNodes[cards])
-				if(column.childNodes[cards].className.indexOf('virada') == -1 && column.childNodes[cards].id != 'temp_div' && column.childNodes[cards].id!= card.id ){
-					console.log(cards)
-					temp_div.appendChild(column.childNodes[cards])					
-				}
-			}		
-		}		
-	}
-	*/
 }
 
 function valorCarta(carta){ // card value 
@@ -317,64 +283,81 @@ function valorCarta(carta){ // card value
 function drop(ev,repositorio) {
 	var erro = '';
 	var data = ev.dataTransfer.getData("Text");
-	var carta = document.getElementById(data)
+	var carta = document.getElementById(data);
 	var valorcarta = valorCarta(carta);
-	marginTopAntes = carta.style.marginTop
-	carta.style.marginTop = "0px"
+	marginTopAntes = carta.style.marginTop;
+	carta.style.marginTop = "0px";
   
 	var movimento = true // verifica se o movimento é possível para exibir a mensagem.
   
-	if(repositorio.id.indexOf('deposito') != -1){ // coloca cartas nos depositos dos naipes 
-		if(repositorio.childNodes.length == 0) { // o repositorio tem que  ser preenchido primeir com uma carta ás de qualquer naipe  
-			if(valorcarta != 1) { // pega o conteudo do h3 e testa se é uma carta ÁS
-				movimento = false;
+    
+	if(repositorio.id.indexOf('deposito') != -1){ // if the card is moved to suit deposit
+		if(repositorio.childNodes.length == 0) {  // deposit is empty
+			
+			// first card must be an Ace
+			if(valorcarta != 1) { 
+				movimento = false; 
+				erro = 'First card must be an ACE!'
+			} else { // add card to deposit
+				carta.style.zIndex = 0;
+				repositorio.appendChild(carta);
+				ev.preventDefault();
+				return;
 			}
-		} else { 
+			
+		} else { // if deposit is not empty
 			if(repositorio.childNodes[0].childNodes[0].childNodes[1].innerHTML != carta.childNodes[0].childNodes[1].innerHTML){
 				movimento = false;	
-		}
+			}
+			
 			valorCartaAnterior = valorCarta(repositorio.lastChild)
 			if(valorcarta != (valorCartaAnterior + 1)){
 				movimento = false;	
 			}
+			
+			if( movimento === true) { // add card to deposit
+				carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
+				repositorio.appendChild(carta);
+				ev.preventDefault();
+				console.log(repositorio.innerHTML)
+				return;
+			}
 		}
-	}
-  
-  if(repositorio.id.indexOf('coluna') != -1){ // coloca as cartas na coluna
-    //alert(repositorio.childNodes.length)
-	if(repositorio.childNodes.length == 0 & valorcarta !=13) {  // se a coluna estiver vazia, só pode aceitar o Rei
-		erro = 'A primeira carta de uma coluna deve ser necessariamente um Rei!';
-		movimento = false;
 	} 
-	if(repositorio.childNodes.length != 0) {
-	  valorCartaAnterior = valorCarta(repositorio.lastChild);
-	  classeCarta = carta.className;
-	  classeCartaAnterior = repositorio.lastChild.className;
+  
+	if(repositorio.id.indexOf('coluna') != -1){ // coloca as cartas na coluna
+		if(repositorio.childNodes.length == 0 & valorcarta !=13) {  // se a coluna estiver vazia, só pode aceitar o Rei
+			erro = 'A primeira carta de uma coluna deve ser necessariamente um Rei!';
+			movimento = false;
+		}
+		if(repositorio.childNodes.length != 0) {
+			valorCartaAnterior = valorCarta(repositorio.lastChild);
+			classeCarta = carta.className;
+			classeCartaAnterior = repositorio.lastChild.className;
 	  
-	   if ( classeCartaAnterior.indexOf(" virada") != -1 ) {
-		erro = "Não é possível colocar uma carta sobre outra carta virada!";
-		movimento = false;			
-      }
-	  else if( valorcarta !=  parseInt(valorCartaAnterior - 1)) {
-		erro = "A próxima carta da coluna deve ter valor inferior!";
-		movimento = false;	
-	  }  else if ( classeCartaAnterior == classeCarta ) {
-		erro = "A próxima carta da coluna deve ter uma cor diferente!";
-		movimento = false;			
-	  } else {
-				
-		carta.style.marginTop = parseInt(repositorio.lastChild.style.marginTop.substr(0,repositorio.lastChild.style.marginTop.indexOf('p'))) + 25 + 'px';
-		carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
-	    // muda o zIndex para o anterior + 1
-        // muda a o margin-top para o anterior mais 10
+			if ( classeCartaAnterior.indexOf(" virada") != -1 ) {
+				erro = "Não é possível colocar uma carta sobre outra carta virada!";
+				movimento = false;			
+			}
+			else if( valorcarta !=  parseInt(valorCartaAnterior - 1)) {
+				erro = "A próxima carta da coluna deve ter valor inferior!";
+				movimento = false;	
+			} 
+			else if ( classeCartaAnterior == classeCarta ) {
+				erro = "A próxima carta da coluna deve ter uma cor diferente!";
+				movimento = false;			
+			} else {
 
+				carta.style.marginTop = parseInt(repositorio.lastChild.style.marginTop.substr(0,repositorio.lastChild.style.marginTop.indexOf('p'))) + 25 + 'px';
+				carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
+				// muda o zIndex para o anterior + 1
+				// muda a o margin-top para o anterior mais 10
+			}
 		}
 	}
-	
-  }
   
 	if(movimento == false) {
-		alert('Movimento não permitido! \n' + erro);
+		alert('Movement not allowed! \n' + erro);
 		carta.style.marginTop = marginTopAntes
 		return;
 	}
@@ -382,6 +365,8 @@ function drop(ev,repositorio) {
 	carta.style.position = 'absolute'
 	repositorio.appendChild(carta);
 	ev.preventDefault();
+
+	
 	
 	/* Remove temp div after moving the cards */
 	temp_div = document.getElementById("temp_div");
