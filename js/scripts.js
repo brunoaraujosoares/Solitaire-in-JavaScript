@@ -232,26 +232,19 @@ function drag(ev) { // bug when drag one or more than three cards
 		// get cards with zIndex greater than the actual card
 		temp_div = document.createElement('div')
 		temp_div.id = 'temp_div'
-		temp_div.style.margin = '0px'
-		temp_div.style.padding = '0px'
-		temp_div.style.position = 'absolute'
-		temp_div.style.top = '0px'
-		temp_div.style.left = '0px'
 		
-		card_list = []
 		for (cards = 0; cards < column.childNodes.length ; cards++) {
-			// console.log(column.childNodes[cards])
+			//console.log(column.childNodes[cards])
 			if(column.childNodes[cards] != 'undefined'){
 				if(parseInt(card.style.zIndex) <  + parseInt(column.childNodes[cards].style.zIndex)){
+					//console.log(column.childNodes.style)
 					temp_div.appendChild(column.childNodes[cards])
-					
 				}
 			}
+			
 		}
-		// console.log(card_list.length)
-		if(card_list.length > 0){ 
-			card.appendChild(temp_div)
-		}
+		//console.log(temp_div.innerHTML)
+		if(temp_div.childNodes.length > 0){  card.appendChild(temp_div)}
 	}
 }
 
@@ -296,8 +289,16 @@ function drop(ev,repositorio) {
 				return;
 			}
 		}
-	} 
-  
+	}
+
+/* add cards in a temporary div to de regular repository
+	if(document.getElementById('temp_div')){
+		for (i = 0; i <= document.getElementById('temp_div').childNodes.length; i++){
+			repositorio.appendChild(document.getElementById('temp_div').childNodes[i]);
+		}
+		document.getElementById('temp_div').parentElement.removeChild(document.getElementById('temp_div'))
+	}
+*/  
 	if(repositorio.id.indexOf('coluna') != -1){ // coloca as cartas na coluna
 		if(repositorio.childNodes.length == 0 & valorcarta !=13) {  // se a coluna estiver vazia, só pode aceitar o Rei
 			erro = 'A primeira carta de uma coluna deve ser necessariamente um Rei!';

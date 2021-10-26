@@ -1,5 +1,3 @@
-
-
 [draggable=true] {
 	cursor: move;
 	-moz-user-select: none;
@@ -57,7 +55,6 @@ footer {
 	margin: 0 auto; 
 	text-align: left; 
 	width: 1090px; 
-	
 }
 
 #carta_vazia{ 
@@ -196,3 +193,16 @@ footer {
     min-width: 196px;
   }
 }
+
+#temp_div {
+	/* border: 1px solid #000000; */
+	margin: 0px;
+	padding: 0px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 200px;
+	width: 200px;
+}
+
+#temp_div *{ margin-top: -10px; left: 0px}
