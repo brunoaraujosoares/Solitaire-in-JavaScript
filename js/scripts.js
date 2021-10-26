@@ -14,16 +14,17 @@
 
 
 /* undo */
+var card_to_undo    = [] // card that goes back to the original position
 var position_before = [] // saves the previous positions of cards
 var status_before   = [] // saves if the card is face down or up
 var zindex_before   = [] // saves the previoues zindex valuie
 
 function undo(card){
-	
-}
+	console.log(card_to_undo + ' - ' + position_before + ', ' + status_before + ' - ' + zindex_before)
+} // end of undo
 
 
-function destroy_deck(){
+function destroy_deck(){ // to refactor !!!
 	list = [
 			'coluna1',
 			'coluna2',
@@ -43,7 +44,7 @@ function destroy_deck(){
 		if (list[i] != 'dispositorio'){
 			document.getElementById(list[i]).innerHTML = ''
 		} else {
-			document.getElementById(list[i]).innerHTML = '<div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div>'
+			document.getElementById(list[i]).innerHTML = '<div id="carta_vazia" onclick="reset_pile()" class="lightgreen">X</div>'
 		}
 	}	
 }
@@ -103,7 +104,7 @@ function exibeCartas(){
 		// coloca a carta na mesa
 		carta.setAttribute("id", "c_"+i)
 		if( i > 27) {
-			dispositorio.appendChild(carta) // o cava
+			dispositorio.appendChild(carta) // the pile
 		} else {
 
 		// define as posições das cartas nas colunas
@@ -141,7 +142,7 @@ function exibeCartas(){
 			}			
 		}
 		
-		carta.onclick = function(){
+		carta.onclick = function(){ 
 
 			// se estiver embaixo de outra carta com a face para cima não vira
 			//if((parseInt(this.style.zIndex) < parseInt(this.parentElement.lastChild.style.zIndex)) & this.className.indexOf('virada') != -1) {			
@@ -165,7 +166,13 @@ function exibeCartas(){
 			
 		}
 		
-		carta.ondragstart = function (){ drag(event) }
+		carta.ondragstart = function (){ 
+			drag(event)
+			card_to_undo.push(carta.id)
+			position_before.push(carta.parentNode.id)
+			status_before.push(carta.className)
+			zindex_before.push(carta.style.zIndex)
+		}
 	
 	}
 
@@ -176,7 +183,7 @@ function exibeCartas(){
 	});
 }
 
-function reiniciaCava(){
+function reset_pile(){
 
 	var disp = document.getElementById("dispositorio")
 	var rep  = document.getElementById("repositorio")
@@ -205,12 +212,12 @@ function reiniciaCava(){
 		disp.childNodes[z].ondragstart=  function (){ drag(event) }
 	}
 
-	// <div id="carta_vazia" onclick="reiniciaCava()" class="lightgreen">X</div> 
+	// <div id="carta_vazia" onclick="reset_pile()" class="lightgreen">X</div> 
 	carta_vazia = document.createElement('div');
 	carta_vazia.innerHTML = '0'
 	carta_vazia.className  = "lightgreen"
 	carta_vazia.id = 'carta_vazia';
-	carta_vazia.onclick = function() { reiniciaCava();}
+	carta_vazia.onclick = function() { reset_pile();}
 	disp.appendChild(carta_vazia)
 	
 }
@@ -306,7 +313,6 @@ function drop(ev,repositorio) {
 				carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
 				repositorio.appendChild(carta);
 				ev.preventDefault();
-				console.log(repositorio.innerHTML)
 				return;
 			}
 		}
