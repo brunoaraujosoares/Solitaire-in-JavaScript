@@ -7,20 +7,27 @@
 // bug when drag more than one card line 246
 // add turn bottom card in the Tableu
 // carregar as cartas abaixo da atual nas colunas
-// 3 levels of undo
 // add ponints
 // add time
 
 
-
-/* undo */
-var card_to_undo    = [] // card that goes back to the original position
-var position_before = [] // saves the previous positions of cards
-var status_before   = [] // saves if the card is face down or up
-var zindex_before   = [] // saves the previoues zindex valuie
+/* undo variables */
+var card_variables  = [] // card that goes back to the original position
+						 // variables: id, className, zIndex, marginTop
 
 function undo(card){
-	console.log(card_to_undo + ' - ' + position_before + ', ' + status_before + ' - ' + zindex_before)
+	if(card_variables.length > 0 ){
+		//console.log(undo_vars)
+		undo_vars = card_variables[card_variables.length-1]
+		undo_card = document.getElementById(undo_vars[0])
+		undo_card.parentNode.removeChild(undo_card)
+		undo_card.className       = undo_vars[1]
+		undo_card.style.zIndex    = undo_vars[2]
+		undo_card.style.marginTop = undo_vars[3]
+		old_repository = old_repository = document.getElementById(undo_vars[4])
+		old_repository.appendChild(undo_card)
+		card_variables.pop();
+	}	
 } // end of undo
 
 
@@ -72,11 +79,11 @@ function exibeCartas(){
 		var face  = document.createElement('h3') // valor da carta
 		var desenho = document.createElement('div') // quantidade de imagens do naipe
 
-		// coloca a classe red ou black, a depender do naipe, para o "texto" ficar vermelho ou preto a depender do naipe
+		// set className "red" or "black", depending on card suit, so card text will be red or black.
 		if (cartas[i].indexOf('&hearts;') != -1 || cartas[i].indexOf('&diams;') != -1 ) { classe = 'red' }
 		else {classe = 'black' }
 		
-		// constroi a carta
+		// build card
 		carta_atual = cartas[i].split(',')
 		face.innerHTML = carta_atual[1];
 		hgroup.appendChild(face)
@@ -144,34 +151,49 @@ function exibeCartas(){
 		
 		carta.onclick = function(){ 
 
+
 			// se estiver embaixo de outra carta com a face para cima não vira
 			//if((parseInt(this.style.zIndex) < parseInt(this.parentElement.lastChild.style.zIndex)) & this.className.indexOf('virada') != -1) {			
 			if(parseInt(this.style.zIndex) < parseInt(this.parentElement.lastChild.style.zIndex)) {
 				return;
+			} else {
+			
+				if(this.classList.contains('virada')){  // faz virar a carta com a face voltada para a mesa quando clica sobre ela
+					classNameBefore = this.className
+					this.className = this.className.substr(0,this.className.indexOf(' virada'));
+					this.setAttribute("draggable", "true");	// permite arrastar a carta	
+					
+					/* variables to undo function */
+					card_variables.push([
+						this.id,
+						classNameBefore,
+						this.style.zIndex,
+						this.style.marginTop,
+						this.parentElement.id
+					]);
+					
+				}
+				
+				// se estiver no "cava" vai para o lado
+				if(this.parentElement.id == "dispositorio"){
+					repositorio = document.getElementById("repositorio")
+					quantas_tem = repositorio.childElementCount // pega o ultimo div
+					this.style.zIndex = quantas_tem
+					repositorio.appendChild(this)
+				}
 			}
-			
-			if(this.classList.contains('virada')){  // faz virar a carta com a face voltada para a mesa quando clica sobre ela
-				this.className = this.className.substr(0,this.className.indexOf(' virada'));
-				this.setAttribute("draggable", "true");	// permite arrastar a carta	
-			}
-			
-			// se estiver no "cava" vai para o lado
-			if(this.parentElement.id == "dispositorio"){
-				repositorio = document.getElementById("repositorio")
-				quantas_tem = repositorio.childElementCount // pega o ultimo div
-				this.style.zIndex = quantas_tem
-				repositorio.appendChild(this)
-			}
-			
-			
 		}
 		
 		carta.ondragstart = function (){ 
 			drag(event)
-			card_to_undo.push(carta.id)
-			position_before.push(carta.parentNode.id)
-			status_before.push(carta.className)
-			zindex_before.push(carta.style.zIndex)
+			/* variables to undo function */
+			card_variables.push([
+				this.id,
+				this.className,
+				this.style.zIndex,
+				this.style.marginTop,
+				this.parentElement.id
+			]);
 		}
 	
 	}
