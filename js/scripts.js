@@ -5,15 +5,15 @@
  */
  
 // bug when drag more than one card
-// add turn bottom card in the Tableu
+// bug when turns the pile: undo stops working
 // carregar as cartas abaixo da atual nas colunas
 // add ponints
 // add time
-
+// add double click function
 
 /* undo variables */
 var card_variables  = [] // card that goes back to the original position
-						 // variables: id, className, zIndex, marginTop
+						 // variables: id, className, zIndex, marginTop, parendNode.id
 
 function undo(card){
 	if(card_variables.length > 0 ){
@@ -26,12 +26,62 @@ function undo(card){
 		undo_card.style.marginTop = undo_vars[3]
 		old_repository = old_repository = document.getElementById(undo_vars[4])
 		old_repository.appendChild(undo_card)
-		card_variables.pop();
+		card_variables.pop(); // removes the last undo variables
 	}	
 } // end of undo
 
+/*
+function send_to_deck_deposit(card){
+	console.log(card.id)
+	deposit = document.getElementById('deposits').getElementsByTagName("div")
+	for (i = 0 ; i < deposit.length ; i++){
+		console.log(i)
+	}
+	console.log(deposits.getElementsByTagName("div").length)
+	/* variables to undo function * /
+	card_variables.push([
+		card.id,
+		card.className,
+		card.style.zIndex,
+		card.style.marginTop,
+		card.parentElement.id
+	]);
+/*	
+	if(repositorio.childNodes.length == 0) {  // deposit is empty
+		
+		// first card must be an Ace
+		if(valorcarta != 1) { 
+			movimento = false; 
+			erro = 'First card must be an ACE!'
+		} else { // add card to deposit
+			carta.style.zIndex = 0;
+			repositorio.appendChild(carta);
+			ev.preventDefault();
+			return;
+		}
+		
+	} else { // if deposit is not empty
+		if(repositorio.childNodes[0].childNodes[0].childNodes[1].innerHTML != carta.childNodes[0].childNodes[1].innerHTML){
+			movimento = false;	
+		}
+		
+		valorCartaAnterior = get_card_value(repositorio.lastChild)
+		if(valorcarta != (valorCartaAnterior + 1)){
+			movimento = false;	
+		}
+		
+		if( movimento === true) { // add card to deposit
+			carta.style.zIndex = parseInt(repositorio.lastChild.style.zIndex) + 1;
+			repositorio.appendChild(carta);
+			ev.preventDefault();
+			return;
+		}
+	}
+* /	
+} */
 
 function destroy_deck(){ // to refactor !!!
+	var card_variables  = [] // reset variables to undo
 	list = [
 			'coluna1',
 			'coluna2',
@@ -149,40 +199,7 @@ function exibeCartas(){
 			}			
 		}
 		
-		carta.onclick = function(){ 
-
-
-			// se estiver embaixo de outra carta com a face para cima não vira
-			//if((parseInt(this.style.zIndex) < parseInt(this.parentElement.lastChild.style.zIndex)) & this.className.indexOf('virada') != -1) {			
-			if(parseInt(this.style.zIndex) < parseInt(this.parentElement.lastChild.style.zIndex)) {
-				return;
-			} else {
-			
-				if(this.classList.contains('virada')){  // faz virar a carta com a face voltada para a mesa quando clica sobre ela
-					classNameBefore = this.className
-					this.className = this.className.substr(0,this.className.indexOf(' virada'));
-					this.setAttribute("draggable", "true");	// permite arrastar a carta	
-					
-					/* variables to undo function */
-					card_variables.push([
-						this.id,
-						classNameBefore,
-						this.style.zIndex,
-						this.style.marginTop,
-						this.parentElement.id
-					]);
-					
-				}
-				
-				// se estiver no "cava" vai para o lado
-				if(this.parentElement.id == "dispositorio"){
-					repositorio = document.getElementById("repositorio")
-					quantas_tem = repositorio.childElementCount // pega o ultimo div
-					this.style.zIndex = quantas_tem
-					repositorio.appendChild(this)
-				}
-			}
-		}
+		carta.onclick = function(){ click_card(this) }
 		
 		carta.ondragstart = function (){ 
 			drag(event)
@@ -195,6 +212,8 @@ function exibeCartas(){
 				this.parentElement.id
 			]);
 		}
+		
+		// carta.ondblclick = function() { send_to_deck_deposit(this) };  
 	
 	}
 
@@ -217,20 +236,7 @@ function reset_pile(){
 		disp.childNodes[z].className += " virada"
 		disp.childNodes[z].style.zIndex = disp.childNodes.length - z
 		disp.childNodes[z].setAttribute("draggable", "false")
-		disp.childNodes[z].onclick = function (){ 
-			
-			if(this.classList.contains('virada')){ 
-				this.className = this.className.substr(0,this.className.indexOf(' virada'));
-				this.setAttribute("draggable", "true");	// permite arrastar a carta	
-			}
-			
-			if(document.getElementById(this.id).parentElement.id == "dispositorio"){
-				repositorio = document.getElementById("repositorio")
-				quantas_tem = repositorio.childElementCount // pega o ultimo div
-				this.style.zIndex = quantas_tem
-				repositorio.appendChild(this)
-			}
-		}
+		disp.childNodes[z].onclick = function(){ click_card(this) }
 		disp.childNodes[z].ondragstart=  function (){ drag(event) }
 	}
 
@@ -287,26 +293,16 @@ function drag(ev) { // bug when drag one or more than three cards
 	}
 }
 
-function valorCarta(carta){ // card value 
-	if(carta.childNodes[1].innerHTML == "A"){ valorcarta = 1; }
-	else if(carta.childNodes[1].innerHTML == "J") { valorcarta = 11; }
-	else if(carta.childNodes[1].innerHTML == "Q") { valorcarta = 12; }
-	else if(carta.childNodes[1].innerHTML == "K") { valorcarta = 13; }
-	else { valorcarta = parseInt(carta.childNodes[0].childNodes[0].innerHTML); }
-  return valorcarta;
-}
-
 function drop(ev,repositorio) {
 	var erro = '';
 	var data = ev.dataTransfer.getData("Text");
 	var carta = document.getElementById(data);
-	var valorcarta = valorCarta(carta);
+	var valorcarta = get_card_value(carta);
 	marginTopAntes = carta.style.marginTop;
 	carta.style.marginTop = "0px";
   
 	var movimento = true // verifica se o movimento é possível para exibir a mensagem.
-  
-    
+      
 	if(repositorio.id.indexOf('deposito') != -1){ // if the card is moved to suit deposit
 		if(repositorio.childNodes.length == 0) {  // deposit is empty
 			
@@ -326,7 +322,7 @@ function drop(ev,repositorio) {
 				movimento = false;	
 			}
 			
-			valorCartaAnterior = valorCarta(repositorio.lastChild)
+			valorCartaAnterior = get_card_value(repositorio.lastChild)
 			if(valorcarta != (valorCartaAnterior + 1)){
 				movimento = false;	
 			}
@@ -346,7 +342,7 @@ function drop(ev,repositorio) {
 			movimento = false;
 		}
 		if(repositorio.childNodes.length != 0) {
-			valorCartaAnterior = valorCarta(repositorio.lastChild);
+			valorCartaAnterior = get_card_value(repositorio.lastChild);
 			classeCarta = carta.className;
 			classeCartaAnterior = repositorio.lastChild.className;
 	  
@@ -380,7 +376,6 @@ function drop(ev,repositorio) {
 	carta.style.position = 'absolute'
 	repositorio.appendChild(carta);
 	ev.preventDefault();
-
 	
 	
 	/* Remove temp div after moving the cards */
@@ -393,4 +388,36 @@ function drop(ev,repositorio) {
 		}
 		document.getElementById(temp_div.parentElement.id).removeChild(temp_div)  
 	}
+}
+
+function click_card(card){
+	// se estiver embaixo de outra carta com a face para cima não vira
+	if(parseInt(card.style.zIndex) < parseInt(card.parentElement.lastChild.style.zIndex)) {
+		return;
+	} else {
+
+		if(card.classList.contains('virada')){  // faz virar a carta com a face voltada para a mesa quando clica sobre ela
+			classNameBefore = card.className
+			card.className = card.className.substr(0,card.className.indexOf(' virada'));
+			card.setAttribute("draggable", "true");	// permite arrastar a carta	
+			
+			/* variables to undo function */
+			card_variables.push([
+				card.id,
+				classNameBefore,
+				card.style.zIndex,
+				card.style.marginTop,
+				card.parentElement.id
+			]);
+		}
+		
+		// if the card is in the pile , goes to de side pile
+		if(card.parentElement.id == "dispositorio"){
+			repositorio = document.getElementById("repositorio")
+			quantas_tem = repositorio.childElementCount // pega o ultimo div
+			card.style.zIndex = quantas_tem
+			repositorio.appendChild(card)
+
+		}
+	}	
 }

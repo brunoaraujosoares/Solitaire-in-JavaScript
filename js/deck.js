@@ -6,16 +6,23 @@ function build_deck(){ // create one deck of cards
 	return cartas;
 } // end build_deck
 
-function shuffle_deck(array) { // embaralha as cartas
+function shuffle_deck(array) {
 	var m = array.length, t, i;
-	// While there remain elements to shuffle…
-	while (m) {
-		// Pick a remaining element…
-		i = Math.floor(Math.random() * m--);
-		// And swap it with the current element.
+	while (m) { // while there are remaining elements to shuffle
+		i = Math.floor(Math.random() * m--); // Pick a random remaining element
+		// and swap it with the current element.
 		t = array[m];
 		array[m] = array[i];
 		array[i] = t;
 	}
 	return array;
 } // end shuffle_deck
+
+function get_card_value(card){
+	if(     card.childNodes[1].innerHTML == "A"){ card_value = 1; }
+	else if(card.childNodes[1].innerHTML == "J"){ card_value = 11;}
+	else if(card.childNodes[1].innerHTML == "Q"){ card_value = 12;}
+	else if(card.childNodes[1].innerHTML == "K"){ card_value = 13;}
+	else { card_value = parseInt(card.childNodes[0].childNodes[0].innerHTML); }
+	return card_value;
+} // end get_card_value
