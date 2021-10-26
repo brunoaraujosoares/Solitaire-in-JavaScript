@@ -1,9 +1,9 @@
 function build_deck(){ // create one deck of cards
-	var suit   = ['&spades;','&hearts;','&clubs;','&diams;'];
-	var	faces  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-	var cartas = [];
-	for(i = 0; i < suit.length ; i++){ for(z = 0; z < faces.length ; z++){ cartas.push(suit[i]+","+faces[z]); } }
-	return cartas;
+	suit   = ['&spades;','&hearts;','&clubs;','&diams;'];
+	faces  = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+	cards = [];
+	for(i = 0; i < suit.length ; i++){ for(z = 0; z < faces.length ; z++){ cards.push(suit[i]+","+faces[z]); } }
+	return cards;
 } // end build_deck
 
 function shuffle_deck(array) {
@@ -26,3 +26,25 @@ function get_card_value(card){
 	else { card_value = parseInt(card.childNodes[0].childNodes[0].innerHTML); }
 	return card_value;
 } // end get_card_value
+
+function reset_pile(){
+	disp = document.getElementById("dispositorio")
+	rep  = document.getElementById("repositorio")
+ 	disp.innerHTML = rep.innerHTML
+	rep.innerHTML = "";
+		
+	for (z = 0; z < disp.childNodes.length ; z++){
+		disp.childNodes[z].className += " virada"
+		disp.childNodes[z].style.zIndex = disp.childNodes.length - z
+		disp.childNodes[z].setAttribute("draggable", "false")
+		disp.childNodes[z].onclick = function(){ click_card(this) }
+		disp.childNodes[z].ondragstart=  function (){ drag(event) }
+	}
+
+	carta_vazia = document.createElement('div');
+	carta_vazia.innerHTML = '0'
+	carta_vazia.className  = "lightgreen"
+	carta_vazia.id = 'carta_vazia';
+	carta_vazia.onclick = function() { reset_pile();}
+	disp.appendChild(carta_vazia)	
+} // end reset_pile

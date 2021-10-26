@@ -6,10 +6,9 @@
  
 // bug when drag more than one card
 // bug when turns the pile: undo stops working
-// carregar as cartas abaixo da atual nas colunas
-// add ponints
+// add points
 // add time
-// add double click function
+// make double click function works
 
 /* undo variables */
 var card_variables  = [] // card that goes back to the original position
@@ -106,7 +105,7 @@ function destroy_deck(){ // to refactor !!!
 	}	
 }
 
-function exibeCartas(){
+function start_game(){
 	destroy_deck()
 	var cartas = shuffle_deck(build_deck());
 	var mesa = document.getElementById("mesa");
@@ -214,44 +213,7 @@ function exibeCartas(){
 		}
 		
 		// carta.ondblclick = function() { send_to_deck_deposit(this) };  
-	
 	}
-
-	var cols = document.querySelectorAll('.carta');
-	[].forEach.call(cols, function(col) {
-		col.addEventListener('dragstart', handleDragStart, false);
-		
-	});
-}
-
-function reset_pile(){
-
-	var disp = document.getElementById("dispositorio")
-	var rep  = document.getElementById("repositorio")
- 
-	disp.innerHTML = rep.innerHTML
-	rep.innerHTML = "";
-		
-	for (z = 0; z < disp.childNodes.length ; z++){
-		disp.childNodes[z].className += " virada"
-		disp.childNodes[z].style.zIndex = disp.childNodes.length - z
-		disp.childNodes[z].setAttribute("draggable", "false")
-		disp.childNodes[z].onclick = function(){ click_card(this) }
-		disp.childNodes[z].ondragstart=  function (){ drag(event) }
-	}
-
-	// <div id="carta_vazia" onclick="reset_pile()" class="lightgreen">X</div> 
-	carta_vazia = document.createElement('div');
-	carta_vazia.innerHTML = '0'
-	carta_vazia.className  = "lightgreen"
-	carta_vazia.id = 'carta_vazia';
-	carta_vazia.onclick = function() { reset_pile();}
-	disp.appendChild(carta_vazia)
-	
-}
-
-function handleDragStart(e) {   
-  //this.style.opacity = '0.4';  // this / e.target is the source node.
 }
 
 function allowDrop(ev) {
