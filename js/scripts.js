@@ -4,7 +4,7 @@
  * Criado em: 13/02/2020
  */
  
-// bug when drag more than one card line 246
+// bug when drag more than one card
 // add turn bottom card in the Tableu
 // carregar as cartas abaixo da atual nas colunas
 // add ponints
